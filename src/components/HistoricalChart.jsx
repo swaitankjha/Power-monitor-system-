@@ -3,12 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { BarChart3 } from 'lucide-react';
 
 const HistoricalChart = ({ data }) => {
-  if (!data || data.length === 0) {
-    return null;
-  }
 
-  // Group data by hour for better visualization
+  // Always call hooks first!
   const hourlyData = useMemo(() => {
+    if (!data || data.length === 0) return [];
+
     const grouped = {};
     
     data.forEach(reading => {
@@ -37,6 +36,11 @@ const HistoricalChart = ({ data }) => {
       avgPower: group.powers.reduce((a, b) => a + b, 0) / group.powers.length
     })).slice(-12); // Last 12 hours
   }, [data]);
+
+  // Now safe to check conditions (hook already called)
+  if (!hourlyData || hourlyData.length === 0) {
+    return null;
+  }
 
   const maxPower = Math.max(...hourlyData.map(d => d.avgPower));
 
@@ -98,6 +102,7 @@ const HistoricalChart = ({ data }) => {
               </tbody>
             </table>
           </div>
+
         </div>
       </CardContent>
     </Card>
